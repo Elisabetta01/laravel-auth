@@ -28,7 +28,7 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.create');
     }
 
     /**
@@ -39,7 +39,24 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title'=>'required|unique:projects|max:255'
+        ],
+        [
+           'title.required'=>'Il campo è obbligatorio',
+           'title.unique'=>'Il dato è già esistente',
+           'title-max'=>'Il campo titolo supera i 255 caratteri' 
+        ]);
+
+        $form_data = $request->all();
+
+        $newProject = new Project();
+
+        $newProject->fill( $form_data );
+
+        $newProject->save();
+
+        return redirect()->route( 'admin.projects.index' );
     }
 
     /**
@@ -48,9 +65,9 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Project $project)
     {
-        //
+        return view('admin.show', compact('project'));
     }
 
     /**
@@ -59,9 +76,9 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Project $project)
     {
-        //
+        return view('admin.edit', compact('project'));
     }
 
     /**
@@ -71,9 +88,23 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Project $project)
     {
-        //
+        $request->validate([
+            'title'=>'required|unique:projects|max:255'
+        ],
+        [
+           'title.required'=>'Il campo è obbligatorio',
+           'title.unique'=>'Il dato è già esistente',
+           'title-max'=>'Il campo titolo supera i 255 caratteri' 
+        ]);
+
+        $form_data = $request->all();
+
+        $project->update($form_data);
+
+        return redirect()->route('admin.projects.index');
+
     }
 
     /**
@@ -82,8 +113,9 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Project $project)
     {
-        //
+        $project->delete();
+        return redirect()->route('admin.projects.index');
     }
 }
