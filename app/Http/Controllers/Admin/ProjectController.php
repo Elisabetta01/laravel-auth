@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 
 use App\Models\Admin\Project;
 
+use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateProjectRequest;
+
+use Illuminate\Support\Facades\Storage;
+
 class ProjectController extends Controller
 {
     /**
@@ -37,9 +42,10 @@ class ProjectController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreProjectRequest $request)
     {
-        $request->validate([
+        /* $request->validate(
+        [
             'title'=>'required|unique:projects|max:255'
         ],
         [
@@ -49,6 +55,15 @@ class ProjectController extends Controller
         ]);
 
         $form_data = $request->all();
+        */
+
+        $form_data = $request->validated();
+
+        if($request->hasFile('img')){
+            $path = Storage::disk('public')->put('project_images', $request->img);
+
+            $form_data['img'] = $path;
+        }
 
         $newProject = new Project();
 
@@ -57,6 +72,7 @@ class ProjectController extends Controller
         $newProject->save();
 
         return redirect()->route( 'admin.projects.index' );
+
     }
 
     /**
@@ -88,9 +104,10 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Project $project)
+    public function update(UpdateProjectRequest $request, Project $project)
     {
-        $request->validate([
+        /* $request->validate(
+        [
             'title'=>'required|unique:projects|max:255'
         ],
         [
@@ -99,7 +116,9 @@ class ProjectController extends Controller
            'title-max'=>'Il campo titolo supera i 255 caratteri' 
         ]);
 
-        $form_data = $request->all();
+        $form_data = $request->all(); */
+
+        $form_data = $request->validated();
 
         $project->update($form_data);
 
@@ -115,6 +134,11 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
+
+        if($project->img){
+            Storage::delete($project->img);
+        }
+
         $project->delete();
         return redirect()->route('admin.projects.index');
     }
