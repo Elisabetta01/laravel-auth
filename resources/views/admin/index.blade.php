@@ -19,7 +19,7 @@
                     
 
                     <div class="card m-4" style="width: 18rem;">
-                        <img src="" class="card-img-top" alt="...">
+                        <img src="{{ asset('storage/' . $element->img ) }}" class="card-img-top" alt="...">
                         <div class="card-body">
                             <h5 class="card-title">{{$element->title}}</h5>
                             <div class="text-center">

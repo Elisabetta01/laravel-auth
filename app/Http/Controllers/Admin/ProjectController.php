@@ -117,8 +117,15 @@ class ProjectController extends Controller
         ]);
 
         $form_data = $request->all(); */
+        
 
         $form_data = $request->validated();
+
+        if($request->hasFile('img')){
+            $path = Storage::disk('public')->put('project_images', $request->img);
+
+            $form_data['img'] = $path;
+        }
 
         $project->update($form_data);
 
